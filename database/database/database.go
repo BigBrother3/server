@@ -9,30 +9,40 @@ import (
 )
 
 var dbName = "test.db"
+var db *bolt.DB
+
+func Start(str string) {
+	var err error
+	dbName = str
+	db, err = bolt.Open(dbName, 0666, &bolt.Options{Timeout: 1 * time.Second})
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+}
 
 func SetDbName(str string) {
 	dbName = str
 }
 
-func Init() {
-	db, err := bolt.Open(dbName, 0666, &bolt.Options{Timeout: 1 * time.Second})
-	if err != nil {
+func Stop(){
+	if err := db.Close(); err != nil {
 		log.Fatal(err)
-		return
 	}
-	if err := db.Update(func(tx *bolt.Tx) error {
-		tx.CreateBucket([]byte("film"))
-		tx.CreateBucket([]byte("person"))
-		tx.CreateBucket([]byte("planet"))
-		tx.CreateBucket([]byte("species"))
-		tx.CreateBucket([]byte("starship"))
-		tx.CreateBucket([]byte("vehicle"))
+}
 
+
+func Init() {
+	
+	if err := db.Update(func(tx *bolt.Tx) error {
+		tx.CreateBucket([]byte("films"))
+		tx.CreateBucket([]byte("people"))
+		tx.CreateBucket([]byte("planets"))
+		tx.CreateBucket([]byte("species"))
+		tx.CreateBucket([]byte("starships"))
+		tx.CreateBucket([]byte("vehicles"))
 		return nil
 	}); err != nil {
-		log.Fatal(err)
-	}
-	if err := db.Close(); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -42,11 +52,6 @@ func DeleteDB() {
 }
 
 func Update(bucketName []byte, key []byte, value []byte) {
-	db, err := bolt.Open(dbName, 0666, &bolt.Options{Timeout: 1 * time.Second})
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
 	if err := db.Update(func(tx *bolt.Tx) error {
 		// Create a bucket.
 		if err := tx.Bucket(bucketName).Put(key, value); err != nil {
@@ -56,41 +61,25 @@ func Update(bucketName []byte, key []byte, value []byte) {
 	}); err != nil {
 		log.Fatal(err)
 	}
-	if err := db.Close(); err != nil {
-		log.Fatal(err)
-	}
 }
 
 func GetValue(bucketName []byte, key []byte) string {
-	db, err := bolt.Open(dbName, 0666, &bolt.Options{Timeout: 1 * time.Second})
-	if err != nil {
-		log.Fatal(err)
-	}
 	var result []byte
 	if err := db.View(func(tx *bolt.Tx) error {
 		//value = tx.Bucket([]byte(bucketName)).Get(key)
 		byteLen := len(tx.Bucket([]byte(bucketName)).Get(key))
 		result = make([]byte, byteLen)
+
 		copy(result[:], tx.Bucket([]byte(bucketName)).Get(key)[:])
 		return nil
 	}); err != nil {
 		log.Fatal(err)
 	}
-	if err := db.Close(); err != nil {
-		log.Fatal(err)
-	}
-
 	return string(result)
 }
 
 //debug
 func CheckBucket(bucketName []byte) {
-	db, err := bolt.Open(dbName, 0666, &bolt.Options{Timeout: 1 * time.Second})
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
-
 	if err := db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(bucketName))
 		c := b.Cursor()
@@ -99,10 +88,6 @@ func CheckBucket(bucketName []byte) {
 		}
 		return nil
 	}); err != nil {
-		log.Fatal(err)
-	}
-
-	if err := db.Close(); err != nil {
 		log.Fatal(err)
 	}
 }

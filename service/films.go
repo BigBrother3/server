@@ -1,7 +1,10 @@
 package service
 
 import (
+	"log"
 	"net/http"
+
+	"github.com/BigBrother3/server/database/database"
 
 	"github.com/unrolled/render"
 )
@@ -9,22 +12,22 @@ import (
 //handle a request with method GET and path "/api/".
 func filmsHandler(formatter *render.Render) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
-		formatter.JSON(w, http.StatusOK, struct {
-			Films     string `json:"films"`
-			People    string `json:"people"`
-			Planets   string `json:"planets"`
-			Species   string `json:"species"`
-			Starships string `json:"starships"`
-			Vehicles  string `json:"vehicles"`
-		}{Films: "https://swapi.co/api/films/",
-			People:    "https://swapi.co/api/people/",
-			Planets:   "https://swapi.co/api/planets/",
-			Species:   "https://swapi.co/api/species/",
-			Starships: "https://swapi.co/api/starships/",
-			Vehicles:  "https://swapi.co/api/vehicles/"})
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("sha"))
 	}
 }
 
 func getFilmsById(w http.ResponseWriter, req *http.Request) {
+	/*
+
+		vars := mux.Vars(req)
+		id, err := strconv.Atoi(vars["id"])
+		if err != nil {
+			log.Fatal(id)
+		}
+	*/
+	w.WriteHeader(http.StatusOK)
+	log.Println(database.GetValue([]byte("film"), []byte("1")))
+	w.Write([]byte("shao"))
 
 }

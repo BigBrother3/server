@@ -78,6 +78,21 @@ func GetValue(bucketName []byte, key []byte) string {
 	return string(result)
 }
 
+func GetBucketCount(bucketName []byte) (int) {
+	count := 0
+	if err := db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(bucketName))
+		c := b.Cursor()
+		for k, _ := c.First(); k != nil; k, _ = c.Next() {
+			count ++
+		}
+		return nil
+	}); err != nil {
+		log.Fatal(err)
+	}
+	return count
+}
+
 //debug
 func CheckBucket(bucketName []byte) {
 	if err := db.View(func(tx *bolt.Tx) error {
@@ -91,3 +106,6 @@ func CheckBucket(bucketName []byte) {
 		log.Fatal(err)
 	}
 }
+
+
+

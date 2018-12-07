@@ -29,7 +29,8 @@ func main() {
 	//value := database.GetValue([]byte("starships") , []byte("10"))
 	//37 some is invalid
 	//value := database.GetValue([]byte("vehicles") , []byte("10"))
-	//log.Println(value) 
+	log.Println(database.GetValue([]byte("starships"), []byte("1") )) 
+	log.Println(len(database.GetValue([]byte("starships") , []byte("1") )))
 	database.Stop()
 }
 

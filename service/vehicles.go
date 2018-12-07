@@ -1,30 +1,52 @@
 package service
 
 import (
+	"log"
 	"net/http"
+	"strconv"
 
+	"github.com/gorilla/mux"
 	"github.com/unrolled/render"
+
+	"github.com/BigBrother3/server/database/database"
 )
 
 //handle a request with method GET and path "/api/".
 func vehiclesHandler(formatter *render.Render) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
-		formatter.JSON(w, http.StatusOK, struct {
-			Films     string `json:"films"`
-			People    string `json:"people"`
-			Planets   string `json:"planets"`
-			Species   string `json:"species"`
-			Starships string `json:"starships"`
-			Vehicles  string `json:"vehicles"`
-		}{Films: "https://swapi.co/api/films/",
-			People:    "https://swapi.co/api/people/",
-			Planets:   "https://swapi.co/api/planets/",
-			Species:   "https://swapi.co/api/species/",
-			Starships: "https://swapi.co/api/starships/",
-			Vehicles:  "https://swapi.co/api/vehicles/"})
+		w.WriteHeader(http.StatusOK)
+		req.ParseForm()
+		page := 1
+		w.Write([]byte("{\"result\" : \n["))
+		if req.Form["page"] != nil {
+			page, _ = strconv.Atoi(req.Form["page"][0])
+		}
+		count := 0
+		for i := 1; ; i++ {
+			item := database.GetValue([]byte("vehicles"), []byte(strconv.Itoa(i)))
+			if len(item) != 0 {
+				count++
+				if count > pagelen*(page-1) {
+					w.Write([]byte(item))
+					if count >= pagelen*page || count >= database.GetBucketCount([]byte("vehicles")) {
+						break
+					}
+					w.Write([]byte(", \n"))
+				}
+			}
+		}
+		w.Write([]byte("]\n}"))
 	}
 }
 
 func getVehiclesById(w http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	_, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		log.Fatal(err)
+	}
 
+	w.WriteHeader(http.StatusOK)
+	data := database.GetValue([]byte("vehicles"), []byte(vars["id"]))
+	w.Write([]byte(data))
 }

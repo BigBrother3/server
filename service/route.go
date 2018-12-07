@@ -7,6 +7,8 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/unrolled/render"
 	"github.com/urfave/negroni"
+
+	"github.com/BigBrother3/server/database/database"
 )
 
 // NewServer configures and returns a Server.
@@ -37,6 +39,7 @@ func initRoutes(mx *mux.Router, formatter *render.Render) {
 			fmt.Println(root)
 		}
 	}
+	database.Start("database/database/test.db")
 
 	mx.HandleFunc("/api/", apiHandler(formatter)).Methods("GET")
 

@@ -6,6 +6,8 @@ import (
 	"github.com/unrolled/render"
 )
 
+var pagelen = 5
+
 //handle a request with method GET and path "/api/".
 func apiHandler(formatter *render.Render) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {

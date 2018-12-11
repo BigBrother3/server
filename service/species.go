@@ -50,3 +50,8 @@ func getSpeciesById(w http.ResponseWriter, req *http.Request) {
 	data := database.GetValue([]byte("species"), []byte(vars["id"]))
 	w.Write([]byte(data))
 }
+
+func speciesPagesHandler(w http.ResponseWriter, req *http.Request) {
+	data := database.GetBucketCount([]byte("species"))
+	w.Write([]byte(strconv.Itoa(data)))
+}

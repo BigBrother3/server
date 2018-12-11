@@ -50,3 +50,8 @@ func getPlanetsById(w http.ResponseWriter, req *http.Request) {
 	data := database.GetValue([]byte("planets"), []byte(vars["id"]))
 	w.Write([]byte(data))
 }
+
+func planetsPagesHandler(w http.ResponseWriter, req *http.Request) {
+	data := database.GetBucketCount([]byte("planets"))
+	w.Write([]byte(strconv.Itoa(data)))
+}

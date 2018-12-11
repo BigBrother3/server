@@ -50,3 +50,8 @@ func getVehiclesById(w http.ResponseWriter, req *http.Request) {
 	data := database.GetValue([]byte("vehicles"), []byte(vars["id"]))
 	w.Write([]byte(data))
 }
+
+func vehiclesPagesHandler(w http.ResponseWriter, req *http.Request) {
+	data := database.GetBucketCount([]byte("vehicles"))
+	w.Write([]byte(strconv.Itoa(data)))
+}

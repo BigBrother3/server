@@ -50,3 +50,8 @@ func getFilmsById(w http.ResponseWriter, req *http.Request) {
 	data := database.GetValue([]byte("films"), []byte(vars["id"]))
 	w.Write([]byte(data))
 }
+
+func filmsPagesHandler(w http.ResponseWriter, req *http.Request) {
+	data := database.GetBucketCount([]byte("films"))
+	w.Write([]byte(strconv.Itoa(data)))
+}

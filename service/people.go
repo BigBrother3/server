@@ -50,3 +50,8 @@ func getPeopleById(w http.ResponseWriter, req *http.Request) {
 	data := database.GetValue([]byte("people"), []byte(vars["id"]))
 	w.Write([]byte(data))
 }
+
+func peoplePagesHandler(w http.ResponseWriter, req *http.Request) {
+	data := database.GetBucketCount([]byte("people"))
+	w.Write([]byte(strconv.Itoa(data)))
+}

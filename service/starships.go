@@ -50,3 +50,8 @@ func getStarshipsById(w http.ResponseWriter, req *http.Request) {
 	data := database.GetValue([]byte("starships"), []byte(vars["id"]))
 	w.Write([]byte(data))
 }
+
+func starshipsPagesHandler(w http.ResponseWriter, req *http.Request) {
+	data := database.GetBucketCount([]byte("starships"))
+	w.Write([]byte(strconv.Itoa(data)))
+}

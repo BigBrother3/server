@@ -10,33 +10,40 @@ import (
 	"github.com/BigBrother3/server/database/swapi"
 )
 
+var dbName = "./database/test.db"
+
 func main() {
+	
 	reSetDB := false
-	database.Start("./database/test.db")
 	if reSetDB {
+		// initialize the database for the first time 
+		// if it is already exist , do not initialize it again
+		/*database.Init(dbName)*/
+		database.Start(dbName)
 		reSetDatabase()
+	}else{
+		database.Start(dbName)
+		//database.Update([]byte("users") , []byte("vip") , []byte("123456") )
+		//example
+		//1-7
+		//log.Println( database.GetValue([]byte("films"), []byte("1")) )
+		//87 some is invalid
+		//log.Println( database.GetValue([]byte("people") , []byte("1")) )
+		//61
+		//log.Println( database.GetValue([]byte("planets") , []byte("1")) )
+		//37
+		//log.Println( database.GetValue([]byte("species") , []byte("1")) )
+		//39 some is invalid
+		//log.Println(database.GetValue([]byte("starships") , []byte("10")) )
+		//37 some is invalid
+		//log.Println(database.GetValue([]byte("vehicles") , []byte("10")) )
+		//log.Println(database.CheckKeyExist([]byte("vehicles") , []byte("8")) )
+		//log.Println( database.GetValue([]byte("users") , []byte("vip") ) )
+		database.Stop()
 	}
-	//example
-	//1-7
-	//value = database.GetValue([]byte("films"), []byte("1"))
-	//87 some is invalid
-	//value = database.GetValue([]byte("people") , []byte("1"))
-	//61
-	//value = database.GetValue([]byte("planets") , []byte("1"))
-	//37
-	//value = database.GetValue([]byte("species") , []byte("1"))
-	//39 some is invalid
-	//value := database.GetValue([]byte("starships") , []byte("10"))
-	//37 some is invalid
-	//value := database.GetValue([]byte("vehicles") , []byte("10"))
-	log.Println(database.GetValue([]byte("starships"), []byte("1") )) 
-	log.Println(len(database.GetValue([]byte("starships") , []byte("1") )))
-	database.Stop()
 }
 
 func reSetDatabase() {
-	/*database.DeleteDB()
-	database.Init()*/
 	findFilm()
 	findPerson()
 	findPlanet()

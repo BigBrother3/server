@@ -4,13 +4,12 @@ import (
 	"log"
 	"os"
 	"time"
-
 	"github.com/boltdb/bolt"
 )
 
 var dbName = "test.db"
 var db *bolt.DB
-
+//you must start the database , or you can not use the method
 func Start(str string) {
 	var err error
 	dbName = str
@@ -20,21 +19,25 @@ func Start(str string) {
 		return
 	}
 }
-
-func SetDbName(str string) {
-	dbName = str
-}
-
+//you must stop the database , or you start it again will throw an error
+//database.Start()
+//******
+//database.Start()
 func Stop(){
 	if err := db.Close(); err != nil {
 		log.Fatal(err)
 	}
 }
 
-
-func Init() {
-	
+//!! only use to  initialize the database 
+func Init(str string) {
+	if _,err := os.Open(str)  ; err == nil{
+		log.Println("database is already exist . If you want to initialze it , please delete it and try again")
+		return
+	}
+	Start(str)
 	if err := db.Update(func(tx *bolt.Tx) error {
+		tx.CreateBucket([]byte("users"))
 		tx.CreateBucket([]byte("films"))
 		tx.CreateBucket([]byte("people"))
 		tx.CreateBucket([]byte("planets"))
@@ -45,15 +48,12 @@ func Init() {
 	}); err != nil {
 		log.Fatal(err)
 	}
+	Stop()
 }
 
-func DeleteDB() {
-	os.Remove(dbName)
-}
 
 func Update(bucketName []byte, key []byte, value []byte) {
 	if err := db.Update(func(tx *bolt.Tx) error {
-		// Create a bucket.
 		if err := tx.Bucket(bucketName).Put(key, value); err != nil {
 			return err
 		}
@@ -69,13 +69,25 @@ func GetValue(bucketName []byte, key []byte) string {
 		//value = tx.Bucket([]byte(bucketName)).Get(key)
 		byteLen := len(tx.Bucket([]byte(bucketName)).Get(key))
 		result = make([]byte, byteLen)
-
 		copy(result[:], tx.Bucket([]byte(bucketName)).Get(key)[:])
 		return nil
 	}); err != nil {
 		log.Fatal(err)
 	}
 	return string(result)
+}
+
+func CheckKeyExist(bucketName []byte, key []byte) bool {
+	var byteLen int
+	if err := db.View(func(tx *bolt.Tx) error {
+		//value = tx.Bucket([]byte(bucketName)).Get(key)
+		byteLen = len(tx.Bucket([]byte(bucketName)).Get(key))
+		return nil
+	}); err != nil {
+		log.Fatal(err)
+	}
+
+	return (byteLen != 0)
 }
 
 func GetBucketCount(bucketName []byte) (int) {

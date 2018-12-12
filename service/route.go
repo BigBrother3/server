@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/BigBrother3/server/models"
+
 	"github.com/gorilla/mux"
 	"github.com/unrolled/render"
 	"github.com/urfave/negroni"
@@ -41,7 +43,14 @@ func initRoutes(mx *mux.Router, formatter *render.Render) {
 	}
 	database.Start("database/database/test.db")
 
-	mx.HandleFunc("/api/", apiHandler(formatter)).Methods("GET")
+	//mx.HandleFunc("/api/", apiHandler(formatter)).Methods("GET")
+	mx.Handle("/api/", negroni.New(
+		negroni.HandlerFunc(models.ValidateMid),
+		negroni.HandlerFunc(apiHandler(formatter)),
+	))
+
+	mx.HandleFunc("/login", loginHandler).Methods("POST")
+	mx.HandleFunc("/register", registerHandler).Methods("POST")
 
 	mx.HandleFunc("/api/films/", filmsHandler(formatter)).Methods("GET")
 	mx.HandleFunc("/api/films/pages", filmsPagesHandler).Methods("GET")

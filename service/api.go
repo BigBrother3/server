@@ -4,13 +4,14 @@ import (
 	"net/http"
 
 	"github.com/unrolled/render"
+	"github.com/urfave/negroni"
 )
 
 var pagelen = 5
 
 //handle a request with method GET and path "/api/".
-func apiHandler(formatter *render.Render) http.HandlerFunc {
-	return func(w http.ResponseWriter, req *http.Request) {
+func apiHandler(formatter *render.Render) negroni.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request, next http.HandlerFunc) {
 		formatter.JSON(w, http.StatusOK, struct {
 			Films     string `json:"films"`
 			People    string `json:"people"`

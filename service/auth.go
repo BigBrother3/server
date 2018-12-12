@@ -26,43 +26,49 @@ type Token struct {
 
 func registerHandler(w http.ResponseWriter, req *http.Request) {
 	var user User
-	err := json.NewDecoder(req.Body).Decode(&user)
+	err := req.ParseForm()
 
-	if err != nil {
+	if err != nil && req.PostForm["username"] != nil && req.PostForm["password"] != nil {
 		w.WriteHeader(http.StatusForbidden)
-		fmt.Println("Error in register request format")
-		w.Write([]byte("register request format is wrong."))
+		fmt.Println("Error in register request format\n")
+		w.Write([]byte("register request format is wrong.\n"))
 		return
 	}
 
+	user.Username = req.PostForm["username"][0]
+	user.Password = req.PostForm["password"][0]
+
 	if database.CheckKeyExist([]byte("users"), []byte(user.Username)) {
 		w.WriteHeader(http.StatusForbidden)
-		fmt.Println("Error in register info")
-		w.Write([]byte("Existent username."))
+		fmt.Println("Error in register info\n")
+		w.Write([]byte("Existent username.\n"))
 		return
 	}
 
 	database.Update([]byte("users"), []byte(user.Username), []byte(user.Password))
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Create a account"))
+	w.Write([]byte("Create a account\n"))
 }
 
 func loginHandler(w http.ResponseWriter, req *http.Request) {
 	var user User
-	err := json.NewDecoder(req.Body).Decode(&user)
+	err := req.ParseForm()
 
-	if err != nil {
+	if err != nil && req.PostForm["username"] != nil && req.PostForm["password"] != nil {
 		w.WriteHeader(http.StatusForbidden)
-		fmt.Println("Error in login request format")
-		w.Write([]byte("login request format is wrong."))
+		fmt.Println("Error in login request format\n")
+		w.Write([]byte("login request format is wrong.\n"))
 		return
 	}
 
+	user.Username = req.PostForm["username"][0]
+	user.Password = req.PostForm["password"][0]
+
 	if !database.CheckKeyExist([]byte("users"), []byte(user.Username)) || user.Password != database.GetValue([]byte("users"), []byte(user.Username)) {
 		w.WriteHeader(http.StatusForbidden)
-		fmt.Println("Error in login info")
-		w.Write([]byte("Inexistent user or wrong password."))
+		fmt.Println("Error in login info\n")
+		w.Write([]byte("Inexistent user or wrong password.\n"))
 		return
 	}
 
@@ -75,7 +81,7 @@ func loginHandler(w http.ResponseWriter, req *http.Request) {
 	tokenStr, err := token.SignedString([]byte(secret))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintln(w, "Error in signing the token")
+		fmt.Fprintln(w, "Error in signing the token\n")
 		log.Fatal(err)
 	}
 

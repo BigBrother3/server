@@ -30,7 +30,7 @@ func registerHandler(w http.ResponseWriter, req *http.Request) {
 
 	if err != nil && req.PostForm["username"] != nil && req.PostForm["password"] != nil {
 		w.WriteHeader(http.StatusForbidden)
-		fmt.Println("Error in register request format\n")
+		fmt.Println("Error in register request format")
 		w.Write([]byte("register request format is wrong.\n"))
 		return
 	}
@@ -40,7 +40,7 @@ func registerHandler(w http.ResponseWriter, req *http.Request) {
 
 	if database.CheckKeyExist([]byte("users"), []byte(user.Username)) {
 		w.WriteHeader(http.StatusForbidden)
-		fmt.Println("Error in register info\n")
+		fmt.Println("Error in register info")
 		w.Write([]byte("Existent username.\n"))
 		return
 	}
@@ -57,7 +57,7 @@ func loginHandler(w http.ResponseWriter, req *http.Request) {
 
 	if err != nil && req.PostForm["username"] != nil && req.PostForm["password"] != nil {
 		w.WriteHeader(http.StatusForbidden)
-		fmt.Println("Error in login request format\n")
+		fmt.Println("Error in login request format")
 		w.Write([]byte("login request format is wrong.\n"))
 		return
 	}
@@ -67,7 +67,7 @@ func loginHandler(w http.ResponseWriter, req *http.Request) {
 
 	if !database.CheckKeyExist([]byte("users"), []byte(user.Username)) || user.Password != database.GetValue([]byte("users"), []byte(user.Username)) {
 		w.WriteHeader(http.StatusForbidden)
-		fmt.Println("Error in login info\n")
+		fmt.Println("Error in login info")
 		w.Write([]byte("Inexistent user or wrong password.\n"))
 		return
 	}
@@ -81,7 +81,7 @@ func loginHandler(w http.ResponseWriter, req *http.Request) {
 	tokenStr, err := token.SignedString([]byte(secret))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintln(w, "Error in signing the token\n")
+		fmt.Fprintln(w, "Error in signing the token")
 		log.Fatal(err)
 	}
 

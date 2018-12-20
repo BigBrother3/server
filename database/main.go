@@ -14,21 +14,18 @@ var dbName = "./database/test.db"
 
 func main() {
 	
-	reSetDB := false
+	reSetDB := true
+	database.Start()
 	if reSetDB {
-		// initialize the database for the first time 
-		// if it is already exist , do not initialize it again
-		/*database.Init(dbName)*/
-		database.Start(dbName)
+		//database.DeleteAllTable();
+		database.Init()
 		reSetDatabase()
 	}else{
-		database.Start(dbName)
-		//database.Update([]byte("users") , []byte("vip") , []byte("123456") )
 		//example
 		//1-7
-		//log.Println( database.GetValue([]byte("films"), []byte("1")) )
+		//log.Println( database.GetValue(("films"), ("1")) )
 		//87 some is invalid
-		//log.Println( database.GetValue([]byte("people") , []byte("1")) )
+		//log.Println( database.GetValue(("people") , ("1")) )
 		//61
 		//log.Println( database.GetValue([]byte("planets") , []byte("1")) )
 		//37
@@ -39,7 +36,7 @@ func main() {
 		//log.Println(database.GetValue([]byte("vehicles") , []byte("10")) )
 		//log.Println(database.CheckKeyExist([]byte("vehicles") , []byte("8")) )
 		//log.Println( database.GetValue([]byte("users") , []byte("vip") ) )
-		database.Stop()
+
 	}
 }
 
@@ -56,10 +53,10 @@ func findFilm() {
 	c := swapi.DefaultClient
 	invalidTime := 0
 	for index := 1; ; index++ {
-		jsonStr := dump(c.Film(index))
 		indexStr := strconv.Itoa(index)
-		if len(database.GetValue([]byte("films"), []byte(indexStr))) == 0 {
-			if !putIntoDb([]byte("films"), []byte(indexStr), jsonStr) {
+		if !database.CheckKeyExist("films" , indexStr) {
+			jsonStr := dump(c.Film(index))
+			if !putIntoDb("films", indexStr, jsonStr) {
 				invalidTime ++
 				if invalidTime == 10{
 					break
@@ -68,6 +65,7 @@ func findFilm() {
 				invalidTime = 0
 			}
 		}else{
+			invalidTime = 0
 			log.Printf("films/%d is already exit", index)
 		}
 	}
@@ -77,10 +75,11 @@ func findPerson() {
 	c := swapi.DefaultClient
 	invalidTime := 0
 	for index := 1; ; index++ {
-		jsonStr := dump(c.Person(index))
+		
 		indexStr := strconv.Itoa(index)
-		if len(database.GetValue([]byte("people"), []byte(indexStr))) == 0 {
-			if !putIntoDb([]byte("people"), []byte(indexStr), jsonStr) {
+		if !database.CheckKeyExist("people" , indexStr) {
+			jsonStr := dump(c.Film(index))
+			if !putIntoDb("people", indexStr, jsonStr) {
 				invalidTime ++
 				if invalidTime == 10{
 					break
@@ -89,6 +88,7 @@ func findPerson() {
 				invalidTime = 0
 			}
 		}else{
+			invalidTime = 0
 			log.Printf("person/%d is already exit", index)
 		}
 	}
@@ -98,10 +98,11 @@ func findPlanet() {
 	c := swapi.DefaultClient
 	invalidTime := 0
 	for index := 1; ; index++ {
-		jsonStr := dump(c.Planet(index))
+		
 		indexStr := strconv.Itoa(index)
-		if len(database.GetValue([]byte("planets"), []byte(indexStr))) == 0 {
-			if !putIntoDb([]byte("planets"), []byte(indexStr), jsonStr) {
+		if !database.CheckKeyExist("planets" , indexStr) {
+			jsonStr := dump(c.Film(index))
+			if !putIntoDb("planets", indexStr, jsonStr) {
 				invalidTime ++
 				if invalidTime == 10{
 					break
@@ -110,6 +111,7 @@ func findPlanet() {
 				invalidTime = 0
 			}
 		}else{
+			invalidTime = 0
 			log.Printf("planets/%d is already exit", index)
 		}
 	}
@@ -119,10 +121,11 @@ func findSpecies() {
 	c := swapi.DefaultClient
 	invalidTime := 0
 	for index := 1; ; index++ {
-		jsonStr := dump(c.Species(index))
+		
 		indexStr := strconv.Itoa(index)
-		if len(database.GetValue([]byte("species"), []byte(indexStr))) == 0 {
-			if !putIntoDb([]byte("species"), []byte(indexStr), jsonStr) {
+		if !database.CheckKeyExist("species" , indexStr) {
+			jsonStr := dump(c.Film(index))
+			if !putIntoDb("planets", indexStr, jsonStr) {
 				invalidTime ++
 				if invalidTime == 10{
 					break
@@ -131,6 +134,7 @@ func findSpecies() {
 				invalidTime = 0
 			}
 		}else{
+			invalidTime = 0
 			log.Printf("species/%d is already exit", index)
 		}
 	}
@@ -140,10 +144,11 @@ func findStarship() {
 	c := swapi.DefaultClient
 	invalidTime := 0
 	for index := 1; ; index++ {
-		jsonStr := dump(c.Starship(index))
+		
 		indexStr := strconv.Itoa(index)
-		if len(database.GetValue([]byte("starships"), []byte(indexStr))) == 0 {
-			if !putIntoDb([]byte("starships"), []byte(indexStr), jsonStr) {
+		if !database.CheckKeyExist("starships" , indexStr) {
+			jsonStr := dump(c.Film(index))
+			if !putIntoDb("starships", indexStr, jsonStr) {
 				invalidTime ++
 				if invalidTime == 10{
 					break
@@ -152,6 +157,7 @@ func findStarship() {
 				invalidTime = 0
 			}
 		}else{
+			invalidTime = 0
 			log.Printf("starships/%d is already exit", index)
 		}
 	}
@@ -161,10 +167,10 @@ func findVehicle() {
 	c := swapi.DefaultClient
 	invalidTime := 0
 	for index := 1; ; index++ {
-		jsonStr := dump(c.Vehicle(index))
 		indexStr := strconv.Itoa(index)
-		if len(database.GetValue([]byte("vehicles"), []byte(indexStr))) == 0 {
-			if !putIntoDb([]byte("vehicles"), []byte(indexStr), jsonStr) {
+		if !database.CheckKeyExist("vehicles" , indexStr) {
+			jsonStr := dump(c.Film(index))
+			if !putIntoDb("vehicles", indexStr, jsonStr) {
 				invalidTime ++
 				if invalidTime == 10{
 					break
@@ -173,6 +179,7 @@ func findVehicle() {
 				invalidTime = 0
 			}
 		}else{
+			invalidTime = 0
 			log.Printf("vehicles/%d is already exit", index)
 		}
 	}
@@ -183,7 +190,7 @@ func dump(data interface{}, err error) []byte {
 	return jsonStr
 }
 
-func putIntoDb(bucketName []byte, index []byte, jsonStr []byte) bool {
+func putIntoDb(bucketName string, index string, jsonStr []byte) bool {
 	stb := &swapi.Film{}
 	err := json.Unmarshal(jsonStr, &stb)
 
@@ -195,7 +202,7 @@ func putIntoDb(bucketName []byte, index []byte, jsonStr []byte) bool {
 		return false
 	}
 	log.Printf("solve %s/%s", bucketName, index)
-	database.Update(bucketName, index, jsonStr)
+	database.Update(bucketName, index, string(jsonStr))
 	return true
 
 }

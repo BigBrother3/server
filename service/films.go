@@ -24,12 +24,12 @@ func filmsHandler(formatter *render.Render) http.HandlerFunc {
 		}
 		count := 0
 		for i := 1; ; i++ {
-			item := database.GetValue([]byte("films"), []byte(strconv.Itoa(i)))
+			item := database.GetValue("films", strconv.Itoa(i))
 			if len(item) != 0 {
 				count++
 				if count > pagelen*(page-1) {
 					w.Write([]byte(item))
-					if count >= pagelen*page || count >= database.GetBucketCount([]byte("films")) {
+					if count >= pagelen*page || count >= database.GetBucketCount("films") {
 						break
 					}
 					w.Write([]byte(", \n"))
@@ -40,7 +40,7 @@ func filmsHandler(formatter *render.Render) http.HandlerFunc {
 	}
 }
 
-func getFilmsById(w http.ResponseWriter, req *http.Request) {
+func getFilmsByID(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	_, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -48,11 +48,11 @@ func getFilmsById(w http.ResponseWriter, req *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	data := database.GetValue([]byte("films"), []byte(vars["id"]))
+	data := database.GetValue("films", vars["id"])
 	w.Write([]byte(data))
 }
 
 func filmsPagesHandler(w http.ResponseWriter, req *http.Request) {
-	data := database.GetBucketCount([]byte("films"))
+	data := database.GetBucketCount("films")
 	w.Write([]byte(strconv.Itoa(data)))
 }

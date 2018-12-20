@@ -24,12 +24,12 @@ func vehiclesHandler(formatter *render.Render) http.HandlerFunc {
 		}
 		count := 0
 		for i := 1; ; i++ {
-			item := database.GetValue([]byte("vehicles"), []byte(strconv.Itoa(i)))
+			item := database.GetValue("vehicles", strconv.Itoa(i))
 			if len(item) != 0 {
 				count++
 				if count > pagelen*(page-1) {
 					w.Write([]byte(item))
-					if count >= pagelen*page || count >= database.GetBucketCount([]byte("vehicles")) {
+					if count >= pagelen*page || count >= database.GetBucketCount("vehicles") {
 						break
 					}
 					w.Write([]byte(", \n"))
@@ -40,7 +40,7 @@ func vehiclesHandler(formatter *render.Render) http.HandlerFunc {
 	}
 }
 
-func getVehiclesById(w http.ResponseWriter, req *http.Request) {
+func getVehiclesByID(w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 	_, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -48,11 +48,11 @@ func getVehiclesById(w http.ResponseWriter, req *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	data := database.GetValue([]byte("vehicles"), []byte(vars["id"]))
+	data := database.GetValue("vehicles", vars["id"])
 	w.Write([]byte(data))
 }
 
 func vehiclesPagesHandler(w http.ResponseWriter, req *http.Request) {
-	data := database.GetBucketCount([]byte("vehicles"))
+	data := database.GetBucketCount("vehicles")
 	w.Write([]byte(strconv.Itoa(data)))
 }

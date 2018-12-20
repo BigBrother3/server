@@ -13,17 +13,18 @@ import (
 
 const secret = "bigbrother"
 
+// User info
 type User struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
+// The Token of a logged in user
 type Token struct {
 	Token string `json:"token"`
 }
 
-//Log in and register
-
+// Log in and register
 func registerHandler(w http.ResponseWriter, req *http.Request) {
 	var user User
 	err := req.ParseForm()
@@ -38,14 +39,14 @@ func registerHandler(w http.ResponseWriter, req *http.Request) {
 	user.Username = req.PostForm["username"][0]
 	user.Password = req.PostForm["password"][0]
 
-	if database.CheckKeyExist([]byte("users"), []byte(user.Username)) {
+	if database.CheckKeyExist("users", user.Username) {
 		w.WriteHeader(http.StatusForbidden)
 		fmt.Println("Error in register info")
 		w.Write([]byte("Existent username.\n"))
 		return
 	}
 
-	database.Update([]byte("users"), []byte(user.Username), []byte(user.Password))
+	database.Update("users", user.Username, user.Password)
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Create a account\n"))
@@ -65,7 +66,7 @@ func loginHandler(w http.ResponseWriter, req *http.Request) {
 	user.Username = req.PostForm["username"][0]
 	user.Password = req.PostForm["password"][0]
 
-	if !database.CheckKeyExist([]byte("users"), []byte(user.Username)) || user.Password != database.GetValue([]byte("users"), []byte(user.Username)) {
+	if !database.CheckKeyExist("users", user.Username) || user.Password != database.GetValue("users", user.Username) {
 		w.WriteHeader(http.StatusForbidden)
 		fmt.Println("Error in login info")
 		w.Write([]byte("Inexistent user or wrong password.\n"))
@@ -86,10 +87,10 @@ func loginHandler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	response := Token{tokenStr}
-	JsonResponse(response, w)
+	jsonResponse(response, w)
 }
 
-func JsonResponse(response interface{}, w http.ResponseWriter) {
+func jsonResponse(response interface{}, w http.ResponseWriter) {
 	json, err := json.Marshal(response)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -41,7 +41,7 @@ func initRoutes(mx *mux.Router, formatter *render.Render) {
 			fmt.Println(root)
 		}
 	}
-	database.Start("database/database/test.db")
+	database.Start()
 
 	//mx.HandleFunc("/api/", apiHandler(formatter)).Methods("GET")
 	mx.Handle("/api/", negroni.New(
@@ -55,30 +55,30 @@ func initRoutes(mx *mux.Router, formatter *render.Render) {
 	mx.HandleFunc("/api/films/", filmsHandler(formatter)).Methods("GET")
 	mx.HandleFunc("/api/films/pages", filmsPagesHandler).Methods("GET")
 	filmsSubRouter := mx.PathPrefix("/api/films").Subrouter()
-	filmsSubRouter.HandleFunc("/{id:[0-9]+}", getFilmsById).Methods("GET")
+	filmsSubRouter.HandleFunc("/{id:[0-9]+}", getFilmsByID).Methods("GET")
 
 	mx.HandleFunc("/api/people/", peopleHandler(formatter)).Methods("GET")
 	mx.HandleFunc("/api/people/pages", peoplePagesHandler).Methods("GET")
 	peopleSubRouter := mx.PathPrefix("/api/people").Subrouter()
-	peopleSubRouter.HandleFunc("/{id:[0-9]+}", getPeopleById).Methods("GET")
+	peopleSubRouter.HandleFunc("/{id:[0-9]+}", getPeopleByID).Methods("GET")
 
 	mx.HandleFunc("/api/planets/", planetsHandler(formatter)).Methods("GET")
 	mx.HandleFunc("/api/planets/pages", planetsPagesHandler).Methods("GET")
 	planetsSubRouter := mx.PathPrefix("/api/planets").Subrouter()
-	planetsSubRouter.HandleFunc("/{id:[0-9]+}", getPlanetsById).Methods("GET")
+	planetsSubRouter.HandleFunc("/{id:[0-9]+}", getPlanetsByID).Methods("GET")
 
 	mx.HandleFunc("/api/species/", speciesHandler(formatter)).Methods("GET")
 	mx.HandleFunc("/api/species/pages", speciesPagesHandler).Methods("GET")
 	speciesSubRouter := mx.PathPrefix("/api/species").Subrouter()
-	speciesSubRouter.HandleFunc("/{id:[0-9]+}", getSpeciesById).Methods("GET")
+	speciesSubRouter.HandleFunc("/{id:[0-9]+}", getSpeciesByID).Methods("GET")
 
 	mx.HandleFunc("/api/starships/", starshipsHandler(formatter)).Methods("GET")
 	mx.HandleFunc("/api/starships/pages", starshipsPagesHandler).Methods("GET")
 	starshipsSubRouter := mx.PathPrefix("/api/starships").Subrouter()
-	starshipsSubRouter.HandleFunc("/{id:[0-9]+}", getStarshipsById).Methods("GET")
+	starshipsSubRouter.HandleFunc("/{id:[0-9]+}", getStarshipsByID).Methods("GET")
 
 	mx.HandleFunc("/api/vehicles/", vehiclesHandler(formatter)).Methods("GET")
 	mx.HandleFunc("/api/vehicles/pages", vehiclesPagesHandler).Methods("GET")
 	vehiclesSubRouter := mx.PathPrefix("/api/vehicles").Subrouter()
-	vehiclesSubRouter.HandleFunc("/{id:[0-9]+}", getVehiclesById).Methods("GET")
+	vehiclesSubRouter.HandleFunc("/{id:[0-9]+}", getVehiclesByID).Methods("GET")
 }

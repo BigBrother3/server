@@ -16,6 +16,10 @@ func Start(){
 	checkErr(err)
 }
 
+func Stop(){
+	db.Close()
+}
+
 func Init(){
 	for i := 0 ; i < len(tableNames) ; i++{
 		prepareSentence := fmt.Sprintf("create table if not exists %s(id varchar(10), content varchar(10000) )",tableNames[i])
